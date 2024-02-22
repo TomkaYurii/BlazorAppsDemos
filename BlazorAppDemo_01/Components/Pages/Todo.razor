@@ -1,0 +1,52 @@
+﻿@page "/todo"
+@rendermode InteractiveServer
+
+<style>
+    .todo-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .todo-item {
+        margin-bottom: 10px;
+    }
+
+    .todo-input {
+        margin-right: 10px;
+    }
+
+    .task-counter {
+        color: #333;
+    }
+</style>
+
+<PageTitle>Counter</PageTitle>
+
+<h3 class="task-counter">TO DO LIST <span>@todos.Count(todo => !todo.IsDone)</span></h3>
+<ul class="todo-list">
+    @foreach (var todo in todos)
+    {
+        <li class="todo-item">
+            <input type="checkbox" @bind="todo.IsDone" />
+            <input class="todo-input" @bind="todo.Title" />
+        </li>
+    }
+</ul>
+
+<input class="todo-input" @bind="newTodo" />
+<button @onclick="AddTodo">Add task</button>
+
+
+@code {
+    private List<TodoItem> todos = new();
+    string newTodo = "";
+
+    void AddTodo()
+    {
+        if (!string.IsNullOrWhiteSpace(newTodo))
+        {
+            todos.Add(new TodoItem { Title = newTodo });
+            newTodo = string.Empty;
+        }
+    }
+}

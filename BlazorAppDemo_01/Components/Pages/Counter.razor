@@ -1,0 +1,25 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+@* Ця директива встановлює режим рендерингу для компонентів. Так, для компонента 
+Counter встановлено режим рендерингу InteractiveServer. Це означає, що під час 
+взаємодії з компонентом обробка цієї взаємодії відбуватиметься на стороні сервера - 
+завдяки з'єднанню SignalR сервер отримуватиме дані про взаємодію, оброблятиме їх і 
+надсилатиме відповідь, на основі якої буде оновлюватись компонент на веб-сторінці. *@
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}

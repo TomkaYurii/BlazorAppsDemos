@@ -1,0 +1,32 @@
+﻿@*  Файл App.razor визначає компонент App, який за замовчуванням є кореневим компонентом усього додатка. 
+    Коли до будь-якого компонента приходить запит, то саме цей компонент визначає відповідь сервера. 
+    А окремі компоненти розташовуються всередині цього компонента.  *@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="app.css" />
+    <link rel="stylesheet" href="BlazorAppDemo_01.styles.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <HeadOutlet />
+    @*  Встановлюється заголовок веб-сторінки *@
+</head>
+
+<body>
+    <Routes />
+    @*  Компонент <Routes /> встановлює конкретний вміст веб-сторінки на основі маршрутизації.
+        Routes використовує вбудований компонент Router, який додає
+        можливість маршрутизації за вкладеними компонентами*@
+    <script src="_framework/blazor.web.js"></script> 
+    @*  скрипт, що автоматично підключається, який встановлює 
+        підключення між браузером і сервером за допомогою SignalR
+        і забезпечує інтерактивність*@
+</body>
+
+
+
+</html>

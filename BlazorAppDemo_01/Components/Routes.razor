@@ -1,0 +1,11 @@
+﻿<Router AppAssembly="typeof(Program).Assembly">  
+    @* атрибут AppAssembly вказує на збірку, в якій слід шукати запитані компоненти *@
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+    @*  Компонент Found містить інший компонент - RouteView. Через атрибут RouteData він отримує 
+        контекст маршрутизації, який використовуватимуть під час обробки запиту. А інший атрибут - 
+        DefaultLayout встановлює компонент, який визначатиме компонування (layout) вмісту - у даному 
+        випадку це компонент MainLayout з папки Layout *@
+</Router>
