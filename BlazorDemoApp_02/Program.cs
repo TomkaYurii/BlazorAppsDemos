@@ -1,14 +1,18 @@
-using BlazorAppDemo_01.Components;
+using BlazorDemoApp_02.Components;
+using BlazorDemoApp_02.Data;
+using BlazorDemoApp_02.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()   //рендеринг компонентів не сервері
-    .AddInteractiveServerComponents();  //інтерактивний рендеринг компонентів не сервері:
+builder.Services.AddRazorComponents()
+.AddInteractiveServerComponents();
 
+builder.Services.AddDbContext<AppDBContext>(item => item.UseSqlServer(builder.Configuration.GetConnectionString("myconn")));
 
-
-
+builder.Services.AddScoped<EmployeeService>();
 
 var app = builder.Build();
 
@@ -25,7 +29,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()               // кореневий компонент застосунку (за замовчуванням це компонент App з файлу App.razor)
-    .AddInteractiveServerRenderMode();      // налаштовує режим інтерактивного рендерингу на стороні сервера
+
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();

@@ -1,0 +1,62 @@
+﻿@page "/ReadStudent"
+
+<h1 class="bg-info text-white">Students</h1>
+
+<table class="table table-sm table-bordered table-striped ">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>DOB</th>
+            <th>Standard</th>
+            <th>Sex</th>
+            <th>Email</th>
+            <th>Terms</th>
+            <th>School</th>
+            <th>Location</th>
+            <th>Edit</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Student s in Students)
+        {
+            <tr>
+                <td>@s.Id</td>
+                <td>@s.Name</td>
+                <td>@s.Age</td>
+                <td>@s.DOB.ToString("dddd, dd MMMM yyyy")</td>
+                <td>@s.Standard</td>
+                <td>@s.Sex</td>
+                <td>@s.Email</td>
+                <td>@s.Terms</td>
+                <td>@s.School_R.Name</td>
+                <td>@s.Location_R.City, @s.Location_R.State</td>
+                <td><a class="btn btn-sm btn-warning" href="/CreateStudent/@s.Id">Edit</a></td>
+                <td>
+                    <button class="btn btn-sm btn-danger" @onclick="@(() => Delete(s))">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Inject]
+    public DataContext Context { get; set; }
+
+    public IEnumerable<Student> Students { get; set; } = Enumerable.Empty<Student>();
+    protected override void OnInitialized()
+    {
+        Students = Context.Student.Include(p => p.School_R).Include(p => p.Location_R);
+    }
+
+    public void Delete(Student s)
+    {
+        Context.Remove(s);
+        Context.SaveChanges();
+    }
+}

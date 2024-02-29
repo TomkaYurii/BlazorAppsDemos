@@ -1,0 +1,17 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JS;
+
+@page "/CallJS"
+
+<h1 class="bg-info text-white">Call JavaScript from Blazor</h1>
+
+<div class="form-group">
+    <button class="btn btn-secondary" @onclick="ShowAlert">Show JavaScript Alert</button>
+</div>
+
+@code {
+    public async void ShowAlert()
+    {
+        await JS.InvokeVoidAsync("JSAlert");
+    }
+}

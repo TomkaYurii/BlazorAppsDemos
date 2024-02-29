@@ -1,0 +1,22 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JS;
+
+@page "/CallClassJS"
+
+<h1 class="bg-info text-white">Call Class with JavaScript from Blazor</h1>
+
+<div class="form-group">
+    <button class="btn btn-secondary" @onclick="HandleClick">
+        Call
+    </button>
+</div>
+
+@code {
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
+
+    public async Task HandleClick()
+    {
+        await JSRuntime.InvokeVoidAsync("CallClass", DotNetObjectReference.Create(new Hello("Dave")));
+    }
+}

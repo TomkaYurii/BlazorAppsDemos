@@ -1,0 +1,135 @@
+﻿@page "/ManageLocation/{id:int}"
+@page "/ManageLocation"
+
+<link href="/validation.css" rel="stylesheet" />
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-12">
+            <h1 class="bg-info text-white">Manage Location</h1>
+        </div>
+        <div class="col-sm-5">
+            <h2 class="text-success p-2">@FormSubmitMessage</h2>
+            <EditForm Model="LocationData" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <label>City</label>
+                    <ValidationMessage For="@(() => LocationData.City)" />
+                    <InputText class="form-control" @bind-Value="LocationData.City" />
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <ValidationMessage For="@(() => LocationData.State)" />
+                    <InputText class="form-control" @bind-Value="LocationData.State" />
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Click</button>
+                </div>
+            </EditForm>
+        </div>
+        <div class="col-sm-7">
+            <table class="table table-sm table-bordered table-striped ">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Location a in Locations)
+                    {
+                        <tr>
+                            <td>@a.Id</td>
+                            <td>@a.City</td>
+                            <td>@a.State</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning"
+                                    @onclick="@(() => Edit(a))">
+                                    Edit
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-danger"
+                                    @onclick="@(() => Delete(a))">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    public DataContext Context { get; set; }
+
+    public Location LocationData = new Location();
+
+    public string FormSubmitMessage { get; set; } = "Form Data Not Submitted";
+
+    public void HandleValidSubmit()
+    {
+        if (Id == 0)
+            Context.Add(LocationData);
+        Context.SaveChanges();
+
+        UpdateBindings(0, "/ManageLocation", "Form Data Submitted");
+        UpdateLocations();
+    }
+
+    public void HandleInvalidSubmit() => FormSubmitMessage = "Invalid Data Submitted";
+
+    public List<Location> Locations = new List<Location>();
+
+    protected override void OnInitialized()
+    {
+        UpdateLocations();
+    }
+
+    public void UpdateLocations()
+    {
+        if (Id != 0)
+            LocationData = Context.Location.Where(a => a.Id == Id).FirstOrDefault();
+        Locations = Context.Location.ToList();
+    }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    [Inject]
+    public NavigationManager NavManager { get; set; }
+
+    public void Edit(Location a)
+    {
+        UpdateBindings(a.Id, "/ManageLocation/" + a.Id, "Form Data Not Submitted");
+        UpdateLocations();
+    }
+
+    public void Delete(Location a)
+    {
+        if (a.Id == LocationData.Id)
+        {
+            UpdateBindings(0, "/ManageLocation", "Form Data Not Submitted");
+        }
+
+        Context.Remove(a);
+        Context.SaveChanges();
+        UpdateLocations();
+    }
+
+    public void UpdateBindings(int idValue, string NavigationValue, string FormSubmitValue)
+    {
+        Id = idValue;
+        NavManager.NavigateTo(NavigationValue);
+        FormSubmitMessage = FormSubmitValue;
+        LocationData = new Location();
+    }
+}

@@ -1,0 +1,52 @@
+﻿@typeparam RowType
+
+<InputSelect class="form-control" @bind-Value="HandleChange">
+    @if (SelectOption != null)
+    {
+        @SelectOption
+    }
+
+    @foreach (RowType item in RowData)
+    {
+        @OptionValue(item)
+        ;
+    }
+</InputSelect>
+
+@code {
+    [Parameter]
+    public RenderFragment SelectOption { get; set; }
+
+    [Parameter]
+    public RenderFragment<RowType> OptionValue { get; set; }
+
+    [Parameter]
+    public IEnumerable<RowType> RowData { get; set; }
+
+    [Parameter]
+    public int MyPhrase { get; set; }
+
+    [Parameter]
+    public EventCallback<int> MyPhraseChanged { get; set; }
+
+    public int HandleChange
+    {
+        get { return MyPhrase; }
+        set
+        {
+            MyPhrase = value;
+            MyPhraseChanged.InvokeAsync(MyPhrase);
+        }
+    }
+
+    [CascadingParameter]
+    public EditContext CurrentEditContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        CurrentEditContext.OnFieldChanged += (sender, args) =>
+        {
+            CurrentEditContext.Validate();
+        };
+    }
+}

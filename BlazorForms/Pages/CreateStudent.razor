@@ -1,0 +1,144 @@
+﻿@page "/CreateStudent/{id:int}"
+@page "/CreateStudent"
+@implements IDisposable
+
+<link href="/validation.css" rel="stylesheet" />
+
+<h1 class="bg-info text-white">Create Student</h1>
+<h2 class="text-success p-2">@FormSubmitMessage</h2>
+<EditForm Model="StudentData" OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Id</label>
+        <InputNumber class="form-control" @bind-Value="StudentData.Id" disabled />
+    </div>
+    <div class="form-group">
+        <label>Name</label>
+        <ValidationMessage For="@(() => StudentData.Name)" />
+        <InputText class="form-control" @bind-Value="StudentData.Name" />
+    </div>
+    <div class="form-group">
+        <label>Age</label>
+        <ValidationMessage For="@(() => StudentData.Age)" />
+        <InputNumber class="form-control" @bind-Value="StudentData.Age" />
+    </div>
+    <div class="form-group">
+        <label>DOB</label>
+        <ValidationMessage For="@(() => StudentData.DOB)" />
+        <InputDate class="form-control" @bind-Value="StudentData.DOB" />
+    </div>
+    <div class="form-group">
+        <label>Standard</label>
+        <ValidationMessage For="@(() => StudentData.Standard)" />
+        <InputSelect class="form-control" @bind-Value="StudentData.Standard">
+            <option selected disabled value="0">Choose a Standard</option>
+            @foreach (var s in Standard)
+            {
+                <option value="@s.Value">@s.Key</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="form-group">
+        <label>Sex</label>
+        <ValidationMessage For="@(() => StudentData.Sex)" />
+        <InputRadioGroup class="form-control" @bind-Value="StudentData.Sex">
+            @foreach (var sex in Sex)
+            {
+                <InputRadio Value="sex.Value" />
+
+                @sex.Key
+            }
+        </InputRadioGroup>
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        <ValidationMessage For="@(() => StudentData.Email)" />
+        <InputText class="form-control" @bind-Value="StudentData.Email" />
+    </div>
+    <div class="form-group">
+        <label>Terms</label>
+        <ValidationMessage For="@(() => StudentData.Terms)" />
+        <InputCheckbox @bind-Value="StudentData.Terms" />
+    </div>
+    <div class="form-group">
+        <label>School</label>
+        <ValidationMessage For="@(() => StudentData.SchoolId)" />
+        <SelectCommon RowType="School" RowData="Schools" @bind-MyPhrase="@StudentData.SchoolId">
+            <SelectOption>
+                <option selected disabled value="0">Choose a School</option>
+            </SelectOption>
+            <OptionValue Context="p">
+                <option value="@p.Id">@p.Name</option>
+            </OptionValue>
+        </SelectCommon>
+    </div>
+    <div class="form-group">
+        <label>Location</label>
+        <ValidationMessage For="@(() => StudentData.LocationId)" />
+        <SelectCommon RowType="Location" RowData="Locations" @bind-MyPhrase="@StudentData.LocationId">
+            <SelectOption>
+                <option selected disabled value="0">Choose a Location</option>
+            </SelectOption>
+
+            <OptionValue Context="p">
+                <option value="@p.Id">@p.City, @p.State</option>
+            </OptionValue>
+        </SelectCommon>
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Click</button>
+    </div>
+</EditForm>
+@code {
+    [Inject]
+    public DataContext Context { get; set; }
+
+    [Inject]
+    public NavigationManager NavManager { get; set; }
+
+    [Parameter]
+    public int Id { get; set; }
+
+    public Student StudentData = new Student();
+    public List<School> Schools = new List<School>();
+    public List<Location> Locations = new List<Location>();
+
+    public string FormSubmitMessage { get; set; } = "Form Data Not Submitted";
+
+    public Dictionary<string, int> Standard = new Dictionary<string, int>() {
+        {"Class 5", 5 },
+        {"Class 6", 6 },
+        {"Class 7", 7 },
+        {"Class 8", 8 },
+        {"Class 9", 9 },
+        {"Class 10", 10 }
+    };
+
+    public Dictionary<string, string> Sex = new Dictionary<string, String>() {
+        {"M", "Male" },
+        {"F", "Female" }
+    };
+
+    public void HandleValidSubmit()
+    {
+        if (Id == 0)
+            Context.Add(StudentData);
+        Context.SaveChanges();
+        //FormSubmitMessage = "Form Data Submitted";
+        NavManager.NavigateTo("/ReadStudent");
+    }
+
+    public void HandleInvalidSubmit() => FormSubmitMessage = "Invalid Data Submitted";
+
+    protected async override Task OnParametersSetAsync()
+    {
+        if (Id != 0)
+            StudentData = await Context.Student.FindAsync(Id);
+        Schools = await Context.School.ToListAsync();
+        Locations = await Context.Location.ToListAsync();
+    }
+
+    public void Dispose() => Context.Entry(StudentData).State = EntityState.Detached;
+}

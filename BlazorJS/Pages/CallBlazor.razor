@@ -1,0 +1,18 @@
+﻿@using Microsoft.JSInterop
+@page "/CallBlazor"
+
+<h1 class="bg-info text-white">Call Blazor from JavaScript</h1>
+
+<div class="form-group">
+    <p class="bg-light text-danger">2nd Indexed No from { 10, 20, 30, 40 } is: <span class="bg-warning text-black-50" id="noIndex"></span></p>
+    <button class="btn btn-primary" onclick="GetNumber(2)">Call Static method</button>
+</div>
+@code {
+
+    [JSInvokable]
+    public static Task<int> ReturnArrayAsync(int noIndex)
+    {
+        int[] nos = { 10, 20, 30, 40 };
+        return Task.FromResult(nos[noIndex]);
+    }
+}

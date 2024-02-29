@@ -1,0 +1,75 @@
+﻿@page "/ManageSchool"
+
+<h1 class="bg-info text-white">Manage School</h1>
+
+<h2 class="text-success bg-light p-2">Add a School</h2>
+
+<h3 class="text-warning bg-light p-2">@FormSubmitMessage</h3>
+
+<div class="form-group">
+	<label>Name:</label>
+	<input class="form-control" type="text" @bind="SchoolData.Name" />
+	<button class="m-1 btn btn-primary" @onclick="Create">Click</button>
+</div>
+
+<table class="table table-sm table-bordered table-striped ">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (School s in Schools)
+        {
+            <tr>
+                <td>@s.Id</td>
+                <td>@s.Name</td>
+                <td>
+                    <button class="btn btn-sm btn-danger"
+                        @onclick="@(() => Delete(s))">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Inject]
+    public DataContext Context { get; set; }
+
+    public School SchoolData = new School();
+
+    public string FormSubmitMessage { get; set; } = "Form Data Not Submitted";
+
+    public void Create()
+    {
+        Context.Add(SchoolData);
+        Context.SaveChanges();
+
+        FormSubmitMessage = "Form Data Submitted";
+        SchoolData = new School();
+        UpdateSchools();
+    }
+
+    public List<School> Schools = new List<School>();
+    protected override void OnInitialized()
+    {
+        UpdateSchools();
+    }
+
+    public void UpdateSchools()
+    {
+        Schools = Context.School.ToList();
+    }
+
+    public void Delete(School s)
+    {
+        Context.Remove(s);
+        Context.SaveChanges();
+        UpdateSchools();
+    }
+}

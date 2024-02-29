@@ -1,0 +1,31 @@
+﻿@using Microsoft.JSInterop
+@page "/CallBlazorE"
+
+<h1 class="bg-info text-white">Call Blazor from JavaScript</h1>
+
+<div class="form-group">
+    <p>Message: <span class="btn-warning">@message</span></p>
+    <button class="btn btn-primary" onclick="SayHello('Lara Croft')">Call JS Method</button>
+</div>
+
+@code {
+    private static Action<string> action;
+    private string message;
+
+    protected override void OnInitialized()
+    {
+        action = UpdateMessage;
+    }
+
+    private void UpdateMessage(string name)
+    {
+        message = "Hello " + name;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public static void ShowHello(string name)
+    {
+        action.Invoke(name);
+    }
+}

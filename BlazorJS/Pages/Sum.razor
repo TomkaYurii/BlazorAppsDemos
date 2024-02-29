@@ -1,0 +1,36 @@
+﻿@using Microsoft.JSInterop
+@inject IJSRuntime JS;
+
+@page "/Sum"
+
+<h1 class="bg-info text-white">Call JavaScript from Blazor</h1>
+
+<div class="form-group">
+    <button class="btn btn-secondary" @onclick="ShowAlert">Show JavaScript Alert</button>
+</div>
+
+<div class="form-group">
+    <p class="bg-light text-danger">Sum is: @sum</p>
+    <label>Number 1</label>
+    <input type="text" class="form-control" @bind="no1" />
+    <label>Number 2</label>
+    <input type="text" class="form-control" @bind="no2" />
+    <button class="m-2 btn btn-secondary" @onclick="ShowSum">Show Sum</button>
+</div>
+
+@code {
+    private string no1;
+    private string no2;
+    private int sum;
+
+    public async void ShowAlert()
+    {
+        await JS.InvokeVoidAsync("JSAlert");
+    }
+
+    public async void ShowSum()
+    {
+        sum = await JS.InvokeAsync<int>("FindSum", no1, no2);
+        StateHasChanged();
+    }
+}

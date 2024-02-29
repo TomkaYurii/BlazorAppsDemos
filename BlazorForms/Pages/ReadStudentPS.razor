@@ -1,0 +1,179 @@
+﻿@page "/ReadStudentPS/{Page:int}"
+@page "/ReadStudentPS"
+
+<style>
+	.curPointer:hover {
+		cursor: pointer;
+	}
+
+	th, td {
+		width: auto;
+	}
+</style>
+
+<h1 class="bg-info text-white">Students (Paging & Sorting)</h1>
+<table class="table table-sm table-bordered table-striped ">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th class="curPointer" @onclick="@(() => Sort("Name"))">Name@((MarkupString)NameArrow)</th>
+			<th class="curPointer" @onclick="@(() => Sort("Age"))">Age@((MarkupString)AgeArrow)</th>
+			<th class="curPointer" @onclick="@(() => Sort("DOB"))">DOB@((MarkupString)DOBArrow)</th>
+			<th>Standard</th>
+			<th>Sex</th>
+			<th>Email</th>
+			<th>Terms</th>
+			<th>School</th>
+			<th>Location</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (Student s in Students)
+		{
+			<tr>
+				<td>@s.Id</td>
+				<td>@s.Name</td>
+				<td>@s.Age</td>
+				<td>@s.DOB.ToString("dddd, dd MMMM yyyy")</td>
+				<td>@s.Standard</td>
+				<td>@s.Sex</td>
+				<td>@s.Email</td>
+				<td>@s.Terms</td>
+				<td>@s.School_R.Name</td>
+				<td>@s.Location_R.City, @s.Location_R.State</td>
+			</tr>
+		}
+	</tbody>
+	<tfoot>
+		<tr>
+			<td colspan="10">
+				<Paging PI="pagingInfo" PageClassesEnabled="true" PageClass="Paging" PageClassSelected="active"></Paging>
+			</td>
+		</tr>
+	</tfoot>
+</table>
+
+@code {
+	[Inject]
+	public DataContext Context { get; set; }
+
+	public IEnumerable<Student> Students { get; set; } = Enumerable.Empty<Student>();
+
+	[Parameter]
+	public int page { get; set; }
+
+	PagingInfo pagingInfo = new PagingInfo();
+
+	protected override void OnParametersSet()
+	{
+		//CreatePagingInfo();
+		GetRecords(sortColumn, sortValue);
+	}
+
+	/*public void CreatePagingInfo()
+	{
+		var AllStudents = Context.Student.Include(p => p.School_R).Include(p => p.Location_R);
+
+		int PageSize = 1;
+		pagingInfo = new PagingInfo();
+		page = page == 0 ? 1 : page;
+		pagingInfo.CurrentPage = page;
+		pagingInfo.TotalItems = AllStudents.Count();
+		pagingInfo.ItemsPerPage = PageSize;
+
+		var skip = PageSize * (Convert.ToInt32(page) - 1);
+		Students = AllStudents.Skip(skip).Take(PageSize).ToList();
+	}*/
+
+	public string sortColumn = "", sortValue = "asc", NameArrow, AgeArrow, DOBArrow;
+
+	void GetRecords(string sortColumn, string sortValue)
+	{
+		int pageSize = 3;
+
+		pagingInfo = new PagingInfo();
+		page = page == 0 ? 1 : page;
+		pagingInfo.CurrentPage = page == 0 ? 1 : page;
+		pagingInfo.TotalItems = Context.Student.Count();
+		pagingInfo.ItemsPerPage = pageSize;
+
+		var skip = pageSize * (Convert.ToInt32(page) - 1);
+
+		var query = Context.Student.Include(p => p.School_R).Include(p => p.Location_R);
+
+		if (sortColumn == "")
+			Students = query.Skip(skip).Take(pageSize).ToList();
+		else
+		{
+			if (sortValue == "asc")
+			{
+				switch (sortColumn)
+				{
+					case "Id":
+						Students = query.OrderBy(s => s.Id).Skip(skip).Take(pageSize).ToList();
+						break;
+					case "Name":
+						Students = query.OrderBy(s => s.Name).Skip(skip).Take(pageSize).ToList();
+						break;
+					case "Age":
+						Students = query.OrderBy(s => s.Age).Skip(skip).Take(pageSize).ToList();
+						break;
+					default:
+						Students = query.OrderBy(s => s.Name).Skip(skip).Take(pageSize).ToList();
+						break;
+				}
+			}
+			else
+			{
+				switch (sortColumn)
+				{
+					case "Id":
+						Students = query.OrderByDescending(s => s.Id).Skip(skip).Take(pageSize).ToList();
+						break;
+					case "Name":
+						Students = query.OrderByDescending(s => s.Name).Skip(skip).Take(pageSize).ToList();
+						break;
+					case "Age":
+						Students = query.OrderByDescending(s => s.Age).Skip(skip).Take(pageSize).ToList();
+						break;
+					default:
+						Students = query.OrderByDescending(s => s.Name).Skip(skip).Take(pageSize).ToList();
+						break;
+				}
+			}
+		}
+	}
+
+	public void Sort(string column)
+	{
+		string upArrow = "<img src=\"/Images/up.png\" />";
+		string downArrow = "<img src=\"/Images/down.png\" />";
+
+		if (column == sortColumn)
+			sortValue = sortValue == "asc" ? "desc" : "asc";
+		else
+		{
+			sortColumn = column;
+			sortValue = "asc";
+		}
+
+		NameArrow = AgeArrow = DOBArrow = "";
+		if (sortColumn == "Name" && sortValue == "asc")
+			NameArrow = upArrow;
+		else if (sortColumn == "Name" && sortValue == "desc")
+			NameArrow = downArrow;
+
+		if (sortColumn == "Age" && sortValue == "asc")
+			AgeArrow = upArrow;
+		else if (sortColumn == "Age" && sortValue == "desc")
+			AgeArrow = downArrow;
+
+		if (sortColumn == "DOB" && sortValue == "asc")
+			DOBArrow = upArrow;
+		else if (sortColumn == "DOB" && sortValue == "desc")
+			DOBArrow = downArrow;
+
+		page = 1;
+		GetRecords(sortColumn, sortValue);
+	}
+}

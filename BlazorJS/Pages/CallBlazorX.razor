@@ -1,0 +1,47 @@
+﻿@using Microsoft.JSInterop
+@page "/CallBlazorX"
+
+<h1 class="bg-info text-white">Call Blazor from JavaScript (instance method)</h1>
+
+<div class="form-group">
+    <p class="bg-light text-danger">Multiplication is: @mResult</p>
+    <label>Number 1</label>
+    <input type="text" class="form-control" @bind="no1" />
+    <label>Number 2</label>
+    <input type="text" class="form-control" @bind="no2" />
+    <button class="m-2 btn btn-secondary" @onclick="FindMultiplication">Calculate</button>
+</div>
+
+
+@code {
+    private string no1;
+    private string no2;
+    private int mResult;
+
+    [Inject]
+    public IJSRuntime JSRuntime { get; set; }
+
+    public async Task FindMultiplication()
+    {
+        await JSRuntime.InvokeVoidAsync("CallCalculateMultiplication", no1, no2);
+    }
+
+    private static Action<int, int> action;
+
+    protected override void OnInitialized()
+    {
+        action = Calculate;
+    }
+
+    [JSInvokable]
+    public static void CalculateMultiplication(int fno, int sno)
+    {
+        action.Invoke(fno, sno);
+    }
+
+    public void Calculate(int no1, int no2)
+    {
+        mResult = Convert.ToInt32(no1) * Convert.ToInt32(no2);
+        StateHasChanged();
+    }
+}
