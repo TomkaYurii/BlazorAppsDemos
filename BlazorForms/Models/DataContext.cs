@@ -5,6 +5,7 @@ namespace BlazorForms.Models
     public class DataContext: DbContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
         public DbSet<Student> Student { get; set; }
         public DbSet<School> School { get; set; }
         public DbSet<Location> Location { get; set; }
