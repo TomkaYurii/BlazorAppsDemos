@@ -6,3 +6,29 @@
     [CascadingParameter]
     public string TransferredValue { get; set; }
 }
+
+
+
+@* <div class="p-5 bg-warning">
+    <h3 class="text-white">@MyMessage</h3>
+</div>
+
+@code {
+    [Parameter]
+    public string MyMessage { get; set; }
+} *@
+
+
+
+@* <div class="p-5 bg-warning">
+    <h3 class="text-white">@T1</h3>
+    <h3 class="text-white">@T2</h3>
+</div>
+
+@code {
+    [CascadingParameter(Name = "Cascade1")]
+    public string T1 { get; set; }
+
+    [CascadingParameter(Name = "Cascade2")]
+    public int T2 { get; set; }
+} *@

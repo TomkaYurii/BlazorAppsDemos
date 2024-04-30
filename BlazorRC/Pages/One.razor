@@ -9,3 +9,26 @@
 @code {
     public string MyMessage = "Hello";
 }  
+
+@* PARAMETER ATRR *@
+@* <div class="p-5 bg-success">
+    <Two MyMessage="@MyMessage"></Two>
+</div>
+
+@code {
+    public string MyMessage = "Hello";
+} *@
+
+@* Multiple Cascading Parameters *@
+@* <div class="p-5 bg-success">
+    <CascadingValue Name="Cascade1" Value="@MyMessage">
+        <CascadingValue Name="Cascade2" Value="@MyNumber">
+            <Two></Two>
+        </CascadingValue>
+    </CascadingValue>
+</div>
+
+@code {
+    public string MyMessage = "Hello";
+    public int MyNumber = 99;
+} *@

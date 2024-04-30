@@ -40,36 +40,32 @@
 @code {
     [Inject]
     public DataContext Context { get; set; }
-
     public School SchoolData = new School();
-
     public string FormSubmitMessage { get; set; } = "Form Data Not Submitted";
 
-    public void Create()
-    {
-        Context.Add(SchoolData);
-        Context.SaveChanges();
+        public void Create()
+        {
+            Context.Add(SchoolData);
+            Context.SaveChanges();
 
-        FormSubmitMessage = "Form Data Submitted";
-        SchoolData = new School();
-        UpdateSchools();
-    }
+            FormSubmitMessage = "Form Data Submitted";
+            SchoolData = new School();
+            UpdateSchools();
+        }
 
     public List<School> Schools = new List<School>();
-    protected override void OnInitialized()
-    {
-        UpdateSchools();
-    }
-
-    public void UpdateSchools()
-    {
-        Schools = Context.School.ToList();
-    }
-
-    public void Delete(School s)
-    {
-        Context.Remove(s);
-        Context.SaveChanges();
-        UpdateSchools();
-    }
+        protected override void OnInitialized()
+        {
+            UpdateSchools();
+        }
+        public void UpdateSchools()
+        {
+            Schools = Context.School.ToList();
+        }
+        public void Delete(School s)
+        {
+            Context.Remove(s);
+            Context.SaveChanges();
+            UpdateSchools();
+        }
 }
